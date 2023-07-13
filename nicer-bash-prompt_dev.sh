@@ -4,23 +4,15 @@
 # https://github.com/RichVel/nicer-bash-prompt
 # (C) 2013, RichVel @ github - license is BSD 2-Clause, http://opensource.org/licenses/BSD-2-Clause
 
-# CUSTOMIZE mode: by Username & hostname prefixes for your servers
-case "$USER" in
-    root)  umode="root";;
-    *)     umode="user";;
+# CUSTOMIZE: set to hostname prefixes for your servers
+case "$(id -u)" in
+    0)    sysmode=Root;;
+    100*)   sysmode=User;;
+    exampletest*)    sysmode=Test;;
+    *)               sysmode=Dev;;
 esac
-case "${umode}_${HOSTNAME}" in
-#    root_*-prod-*)   sysmode=PROD;;
-    root_*)       sysmode=root;;
-    user_NOTEBOOK-*) sysmode=local;;
-    user_*-WSN-*) sysmode=local;;
-    user_*-SBT-*) sysmode=local;;
-    *)            sysmode=Dev;;
-esac
-#echo "sysmode = $sysmode"
-
-if [ "$SIMULATE_PROD" = "yes" ]; then
-    sysmode=PROD
+if [ "$SIMULATE_ROOT" = "yes" ]; then
+    sysmode=root
 fi
 
 # ======== History setup - optional ===============
@@ -109,7 +101,8 @@ function bash_prompt() {
     fi
 
     host=${HOSTNAME%%.*}          # Strip suffix - CUSTOMIZE: set to domain name for your servers
-    specialpart="${USER}@${host}"
+    user=$(echo "$USER" | sed 's/@.*//')    # Strip suffix - CUSTOMIZE: set to domain name for your servers
+    specialpart="${user}@${host}"
     # Red prompt if production system
     if [ $sysmode = 'root' ]; then
         specialpart="$red$specialpart$uninverse"
