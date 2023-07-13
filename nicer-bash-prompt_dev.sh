@@ -4,12 +4,17 @@
 # https://github.com/RichVel/nicer-bash-prompt
 # (C) 2013, RichVel @ github - license is BSD 2-Clause, http://opensource.org/licenses/BSD-2-Clause
 
-# CUSTOMIZE: set to hostname prefixes for your servers
-case "$(id -u)" in
-    0)    sysmode=Root;;
-    100*)   sysmode=User;;
-    exampletest*)    sysmode=Test;;
-    *)               sysmode=Dev;;
+# CUSTOMIZE mode: by Username & hostname prefixes for your servers
+case "$USER" in
+    root)  umode="root";;
+    *)     umode="user";;
+esac
+case "${umode}_${HOSTNAME}" in
+#    root_*-prod-*)   sysmode=PROD;;
+    root_*)       sysmode=root;;
+    user_NOTEBOOK-*) sysmode=local;;
+    user_*-WSN-*) sysmode=local;;
+    *)            sysmode=Dev;;
 esac
 if [ "$SIMULATE_ROOT" = "yes" ]; then
     sysmode=root
