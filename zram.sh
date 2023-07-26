@@ -60,7 +60,7 @@ function help_all {
 # Simple commands check
 if [ -z "$1" ]; then
   help_all
-  exit 1
+  exit 0
 elif [ "$1" = "--help" ]; then
   help_all
   exit 0
@@ -68,6 +68,9 @@ elif [ "$1" = "--version" ]; then
   help_v
   exit 0
 fi
+
+# DEBUG
+echo "* Arguments: $@" 
 
 # Get current date & time
 # cur_date=$(get_date)
@@ -127,6 +130,7 @@ function zram_start {
     mkdir -p ${ZPATH}/cache/google-chrome
     mkdir -p ${ZPATH}/cache/opera
     mkdir -p ${ZPATH}/cache/mozilla
+    mkdir -p ${ZPATH}/cache/yandex-browser
     echo "chown Cache-dir for '${z_user}'"
     chown -R ${z_user} ${ZPATH}
 
