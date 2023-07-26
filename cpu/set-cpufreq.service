@@ -6,7 +6,7 @@ Description=Set CPU Max frequency & governor
 After=multi-user.target
 
 [Service]
-Type=idle
+Type=oneshot
 ExecStart=/root/set-cpufreq.sh
 
 [Install]
