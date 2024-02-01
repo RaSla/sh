@@ -3,28 +3,28 @@
 # fork of:
 # https://github.com/RichVel/nicer-bash-prompt
 # (C) 2013, RichVel @ github - license is BSD 2-Clause, http://opensource.org/licenses/BSD-2-Clause
-#
-# Creates a bash prompt that includes red hostname if production, as well as
-# current git branch, and a shortened current directory (last two directories
-# in $PWD).  Also sets a short window title so it works better with tab-based
-# terminal programs such as Mac Terminal.  Tested on Linux with Mac Terminal
-# ssh'ed in, should work fine with other setups.
-#
-# Requires tput and git.  See CUSTOMIZE comments to configure for your hosts, domains, etc.
-#
-# Generally works well, occasionally has issues with editing after Ctrl/R - if you get this, refresh
-# bash's command line display with Ctrl/L (patches welcome).
-#
 
-# CUSTOMIZE: set to hostname prefixes for your servers
-case "$(id -u)" in
-    0)    sysmode=Root;;
-    100*)   sysmode=User;;
-    exampletest*)    sysmode=Test;;
-    *)               sysmode=Dev;;
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# CUSTOMIZE: Strip suffix for username & hostname for your servers
+user=$(echo "$USER" | sed 's/@.*//')
+host=${HOSTNAME%%.*}
+# CUSTOMIZE mode: by Username & hostname prefixes for your servers
+case "${user}" in
+    root) sysmode=root;;
+    *)    sysmode=user;;
+esac
+case "${host}" in
+    *-prod*) mode_color=red;;
+    *-test*) mode_color=magenta;;
+    *)       mode_color=yellow;;
 esac
 if [ "$SIMULATE_ROOT" = "yes" ]; then
-    sysmode=Root
+    sysmode=root
+fi
+if [ ! -z "$MODE_COLOR" ]; then
+    mode_color=$MODE_COLOR
 fi
 
 # ======== History setup - optional ===============
@@ -112,16 +112,17 @@ function bash_prompt() {
         branch=$(git branch 2>/dev/null | grep '^*' |  cut -d " " -f 2)
     fi
 
-    host=${HOSTNAME%%.*}          # Strip suffix - CUSTOMIZE: set to domain name for your servers
-    specialpart="${USER}@${host}"
-    # Red prompt if production system
-    if [ $sysmode = 'Root' ]; then
-        specialpart="$red$specialpart"
+    specialpart="${user}@${host}"
+    # Red prompt if root
+    if [ $sysmode = 'root' ]; then
+        prompt="$red$bold${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}$red#$black$reset "
+    else
+        prompt="${!mode_color}${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
     fi
 
     #  CUSTOMIZE: if not using Debian/Ubuntu (or you never use chroot), use the first version of this line
-    # prompt="$yellow${specialpart} ${branch:+$green[$branch] }$blue${promptpath}\$$black$reset "
-    prompt="${debian_chroot:+($debian_chroot)}$yellow${specialpart} ${branch:+$green[$branch] }$blue${promptpath}\$$black$reset "
+    # prompt="$yellow${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
+    # prompt="${debian_chroot:+($debian_chroot)}${!mode_color}${specialpart} ${branch:+$green[$branch] }$blue${promptpath}\$$black$reset "
     echo -n "$prompt"
 }
 

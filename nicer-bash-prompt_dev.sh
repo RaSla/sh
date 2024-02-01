@@ -4,20 +4,27 @@
 # https://github.com/RichVel/nicer-bash-prompt
 # (C) 2013, RichVel @ github - license is BSD 2-Clause, http://opensource.org/licenses/BSD-2-Clause
 
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# CUSTOMIZE: Strip suffix for username & hostname for your servers
+user=$(echo "$USER" | sed 's/@.*//')
+host=${HOSTNAME%%.*}
 # CUSTOMIZE mode: by Username & hostname prefixes for your servers
-case "$USER" in
-    root)  umode="root";;
-    *)     umode="user";;
+case "${user}" in
+    root) sysmode=root;;
+    *)    sysmode=user;;
 esac
-case "${umode}_${HOSTNAME}" in
-#    root_*-prod-*)   sysmode=PROD;;
-    root_*)       sysmode=root;;
-    user_NOTEBOOK-*) sysmode=local;;
-    user_*-WSN-*) sysmode=local;;
-    *)            sysmode=Dev;;
+case "${host}" in
+    NOTEBOOK-*) mode_color=green;;
+    *-WSN-*) mode_color=green;;
+    *)       mode_color=yellow;;
 esac
 if [ "$SIMULATE_ROOT" = "yes" ]; then
     sysmode=root
+fi
+if [ ! -z "$MODE_COLOR" ]; then
+    mode_color=$MODE_COLOR
 fi
 
 # ======== History setup - optional ===============
@@ -105,23 +112,17 @@ function bash_prompt() {
         branch=$(git branch 2>/dev/null | grep '^*' |  cut -d " " -f 2)
     fi
 
-    host=${HOSTNAME%%.*}          # Strip suffix - CUSTOMIZE: set to domain name for your servers
-    user=$(echo "$USER" | sed 's/@.*//')    # Strip suffix - CUSTOMIZE: set to domain name for your servers
     specialpart="${user}@${host}"
-    # Red prompt if production system
+    # Red prompt if root
     if [ $sysmode = 'root' ]; then
-        specialpart="$red$specialpart$uninverse"
-    fi
-
-    if [ $sysmode = 'local' ]; then
-        prompt="$green${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
-    else  # Dev / Test
-        prompt="$yellow${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
+        prompt="$red$bold${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}$red#$black$reset "
+    else
+        prompt="${!mode_color}${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
     fi
 
     #  CUSTOMIZE: if not using Debian/Ubuntu (or you never use chroot), use the first version of this line
-    #prompt="$yellow${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
-    # prompt="${debian_chroot:+($debian_chroot)}$yellow${specialpart} ${branch:+$green[$branch] }$blue${promptpath}\$$black$reset "
+    # prompt="$yellow${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
+    # prompt="${debian_chroot:+($debian_chroot)}${!mode_color}${specialpart} ${branch:+$green[$branch] }$blue${promptpath}\$$black$reset "
     echo -n "$prompt"
 }
 
@@ -130,14 +131,12 @@ function per_prompt_command {
     # Set the window title if a terminal window (Mac or Linux)
     if [ $sysmode = 'root' ]; then
         termtitle="[${USER}]: $PWD"
-    elif [ $sysmode = 'local' ]; then
-        termtitle="[${USER}]: $(promptpath)"
     else
-        termtitle="[${sysmode}] "${HOSTNAME%%.*}": "$(basename "$PWD")
+        termtitle="[${user}]: $(promptpath)"
     fi
     case "$TERM" in
         xterm*|rxvt*)
-            echo -ne "\033]0; "${termtitle}"\007"
+            echo -ne "\033]0;"${termtitle}"\007"
             ;;
     esac
     # Do the prompt
