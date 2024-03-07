@@ -111,13 +111,18 @@ function bash_prompt() {
     if [[ $? == 0 ]]; then
         branch=$(git branch 2>/dev/null | grep '^*' |  cut -d " " -f 2)
     fi
+    # show k8s ctx: export NICER_K8S=1
+    if [ ! -z "$NICER_K8S" ]; then
+        ctx=$(kubectl config current-context 2>/dev/null)
+        k8s_ctx="${magenta}${ctx} "
+    fi
 
     specialpart="${user}@${host}"
     # Red prompt if root
     if [ $sysmode = 'root' ]; then
-        prompt="$red$bold${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}$red#$black$reset "
+        prompt="$red$bold${specialpart} ${k8s_ctx}${branch:+$cyan[$branch] }$blue${promptpath}$red#$black$reset "
     else
-        prompt="${!mode_color}${specialpart} ${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
+        prompt="${!mode_color}${specialpart} ${k8s_ctx}${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
     fi
 
     #  CUSTOMIZE: if not using Debian/Ubuntu (or you never use chroot), use the first version of this line
