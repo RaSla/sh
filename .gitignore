@@ -1,13 +1,15 @@
 ## IDE
 .idea
 .vscode
+*.iml
 
-## Confidentially
+## Confidential
 .acme.sh
 **/.env
-**/acme-dns.sh.env
+**/*.env
 
 ## Backup- and local- version
+**/.DS_Store
 *~
 *.bak
 *.local
