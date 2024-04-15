@@ -15,8 +15,8 @@
 
 ## Установка
 
-Для работы `nicer-bash-promtp.sh` достаточно добавить его в `~/.bashrc` (для одного пользователя),
-либо добавить загрузку скрипта в обще-системный профиль `bashrc` :
+Для работы `nicer-bash-promtp.sh` достаточно добавить загрузку скрипта в `~/.bashrc` (для одного пользователя),
+либо в обще-системный профиль `bashrc` :
 
 ### OS-wide
 
@@ -35,7 +35,7 @@ if [ -d /etc/bashrc.d ]; then
 fi
 ## put nicer-bash-prompt_.sh in /etc/bashrc.d , like:
 # cd /etc/bashrc.d
-# wget https://github.com/RaSla/sh/blob/main/nicer-bash-prompt_server.sh
+# wget https://github.com/RaSla/sh/raw/main/nicer-bash-prompt_server.sh
 ## OR copy it by SCP, like:
 # scp nicer-bash-prompt_server.sh root@10-dev-syngx:/etc/bashrc.d/
 ```
