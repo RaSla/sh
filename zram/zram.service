@@ -1,14 +1,16 @@
-## ln -sf /root/zram.service /lib/systemd/system/
+## ln -sf /opt/zram.service /lib/systemd/system/
 ## systemctl daemon-reload
 ## systemctl start zram
+## systemctl enable zram
+## systemctl status zram
 [Unit]
 Description=ZRAM: for user's cache & swap in RAM
 #After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/root/zram.sh + 500 0 linux
-ExecStop=/root/zram.sh -
+ExecStart=/opt/zram.sh + 500 0 linux
+ExecStop=/opt/zram.sh -
 RemainAfterExit=yes
 
 [Install]

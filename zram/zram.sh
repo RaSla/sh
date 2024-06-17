@@ -127,6 +127,7 @@ function zram_start {
     # Make dirs
     echo "> Making DIRs for Web-Browser's Cache..."
     mkdir -p ${ZPATH}/cache/chromium
+    mkdir -p ${ZPATH}/cache/thorium
     mkdir -p ${ZPATH}/cache/google-chrome
     mkdir -p ${ZPATH}/cache/opera
     mkdir -p ${ZPATH}/cache/mozilla
