@@ -1,16 +1,17 @@
 #!/bin/bash
 #
-# Create ZRAM in /tmp/zram for Chrome/Chromium/Opera/FireFox	 CACHE
+# Use ZRAM for CACHE & SWAP
 
 NAME="zram.sh"
 VERSION=2
 
+CACHE_FOLDERS="chromium thorium google-chrome mozilla opera vivaldi yandex-browser"
 # ZSIZE_CACHE - (Mb) size for Cache-dir
 ZSIZE_CACHE=512
 # ZSIZE_SWAP - (Mb) size for SWAP; 0 = SWAP is OFF
 ZSIZE_SWAP=512
 #
-ZPATH=/tmp/zram/
+ZPATH=/tmp/zram
 #
 ZDEV_CACHE=zram0
 ZDEV_SWAP=zram1
@@ -126,13 +127,13 @@ function zram_start {
 
     # Make dirs
     echo "> Making DIRs for Web-Browser's Cache..."
-    mkdir -p ${ZPATH}/cache/chromium
-    mkdir -p ${ZPATH}/cache/thorium
-    mkdir -p ${ZPATH}/cache/google-chrome
-    mkdir -p ${ZPATH}/cache/opera
-    mkdir -p ${ZPATH}/cache/mozilla
-    mkdir -p ${ZPATH}/cache/yandex-browser
-    echo "chown Cache-dir for '${z_user}'"
+    for dir in ${CACHE_FOLDERS}
+    do
+      path=${ZPATH}/${dir}
+      echo ">> ${path}"
+      mkdir -p ${path}
+    done
+    echo "chown Cache-dir to '${z_user}'"
     chown -R ${z_user} ${ZPATH}
 
     echo "> Making ZRAM completed !"
@@ -144,16 +145,17 @@ function zram_stop {
   if [ -f ${ZFLAG_SWAP} ]; then
     echo "Turning off SWAP ..."
     swapoff /dev/${ZDEV_SWAP}
+    echo "Reset ZRAM-swap device..."
+    echo 1 > /sys/block/${ZDEV_SWAP}/reset
     rm ${ZFLAG_SWAP}
   fi
 
   if [ -f ${ZFLAG_CACHE} ]; then
-    echo "Unmount ZRAM DIRs..."
+    echo "Unmount ZRAM-cache..."
     rm -rf ${ZPATH}/*
     umount ${ZPATH}
 
-    echo "Resize ZRAM down to 0..."
-    echo 1 > /sys/block/${ZDEV_SWAP}/reset
+    echo "Reset ZRAM-cache device..."
     echo 1 > /sys/block/${ZDEV_CACHE}/reset
 
     echo "Unloading module ZRAM..."

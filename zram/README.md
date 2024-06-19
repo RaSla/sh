@@ -14,6 +14,7 @@ Script for ZRAM cache-dirs (and SWAP, optional)
 ```
 
 * edit `zram.service` file - see `Configure` section
+* (optional) edit `CACHE_FOLDERS` var in `zram.sh`
 * run commands as ROOT:
 
 ```shell
@@ -34,7 +35,7 @@ Arguments:
 * `+` - create zram device(s) ; `-` - destory zram device(s)
 * `500` - size (Mb) for cache-dir `/tmp/zram`
 * `0` - size (Mb) for SWAP device. If > 0, then SWAP-device will be created
-* `linux` - Username for `chown` (last argument, `linux` by default)
+* `linux` - Username for `chown` (`linux` by default; `<USERNAME>:<GROUP>` are acceptable too)
 
 ## Usage
 
@@ -43,7 +44,7 @@ By User: create sym-links to the ZRAM-folders, like:
 ```shell
 $ cd ~/.cache
 $ rm -rf mozilla
-$ ln -s /tmp/zram/cache/mozilla/
-$ ln -s /tmp/zram/cache/thorium/
-$ ln -s /tmp/zram/cache/yandex-browser/
+$ ln -s /tmp/zram/mozilla/
+$ ln -s /tmp/zram/thorium/
+$ ln -s /tmp/zram/yandex-browser/
 ```
