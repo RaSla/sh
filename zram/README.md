@@ -4,7 +4,15 @@ Script for ZRAM cache-dirs (and SWAP, optional)
 
 ## Install
 
-* Copy 2 zram-files to the `/opt` folder
+* Copy 2 zram-files to the `/opt` folder. Example:
+
+```shell
+# cd /opt
+# wget https://github.com/RaSla/sh/raw/main/zram/zram.service
+# wget https://github.com/RaSla/sh/raw/main/zram/zram.sh
+# chmod +x zram.sh
+```
+
 * edit `zram.service` file - see `Configure` section
 * run commands as ROOT:
 
@@ -33,7 +41,7 @@ Arguments:
 By User: create sym-links to the ZRAM-folders, like:
 
 ```shell
-$ cd /.cache
+$ cd ~/.cache
 $ rm -rf mozilla
 $ ln -s /tmp/zram/cache/mozilla/
 $ ln -s /tmp/zram/cache/thorium/
