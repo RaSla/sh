@@ -107,6 +107,15 @@ cyan="$bold\[$(tput setaf 6)\]"
 function bash_prompt() {
     promptpath=$(promptpath)
     branch=""
+    # Python virtualenv: export NICER_VENV=1
+    if [ ! -z "$NICER_VENV" ]; then
+      if test -z "$VIRTUAL_ENV" ; then
+        venv=""
+      else
+        venv="(`basename \"$VIRTUAL_ENV\"`) "
+      fi
+    fi
+    # git
     git branch >/dev/null 2>&1
     if [[ $? == 0 ]]; then
         branch=$(git branch 2>/dev/null | grep '^*' |  cut -d " " -f 2)
@@ -120,9 +129,9 @@ function bash_prompt() {
     specialpart="${user}@${host}"
     # Red prompt if root
     if [ $sysmode = 'root' ]; then
-        prompt="$red$bold${specialpart} ${k8s_ctx}${branch:+$cyan[$branch] }$blue${promptpath}$red#$black$reset "
+        prompt="${venv}$red$bold${specialpart} ${k8s_ctx}${branch:+$cyan[$branch] }$blue${promptpath}#$black$reset "
     else
-        prompt="${!mode_color}${specialpart} ${k8s_ctx}${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
+        prompt="${venv}${!mode_color}${specialpart} ${k8s_ctx}${branch:+$cyan[$branch] }$blue${promptpath}\$$black$reset "
     fi
 
     #  CUSTOMIZE: if not using Debian/Ubuntu (or you never use chroot), use the first version of this line
