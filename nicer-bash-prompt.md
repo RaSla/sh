@@ -49,4 +49,5 @@ fi
 NICER_BASH_SH=~/git/nicer-bash-prompt_dev.sh
 if [ -f $NICER_BASH_SH ]; then . $NICER_BASH_SH ; fi
 export NICER_K8S=1
+export NICER_VENV=1
 ```
