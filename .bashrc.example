@@ -124,7 +124,7 @@ if [ -z "$(pgrep ssh-agent)" ]; then
     eval $(ssh-agent -s) > /dev/null
 else
     export SSH_AGENT_PID=$(pgrep ssh-agent)
-    export SSH_AUTH_SOCK=$(find /tmp/ssh-* -name agent.*)
+    export SSH_AUTH_SOCK=$(find /tmp/ssh-* -name 'agent.*')
 fi
 
 ## NICER-BASH-PROMPT - get from https://github.com/RaSla/sh/blob/main/nicer-bash-prompt_dev.sh
@@ -154,6 +154,11 @@ if [ $(which helm | wc -l) = "1" ]; then source <(helm completion bash) ; fi
 if [ $(which kubectl | wc -l) = "1" ]; then source <(kubectl completion bash) ; fi
 if [ $(which kustomize | wc -l) = "1" ]; then source <(kustomize completion bash) ; fi
 alias helmls="helm ls --time-format='2006-01-02 15:04:05 Z0700'"
+
+B64_FILE=~/git/__.b64
+alias b64dec='base64 -d $B64_FILE; echo ""'
+alias b64enc='base64 $B64_FILE; echo ""'
+alias b64enc0='base64 -w0 $B64_FILE; echo ""'
 
 ## InfoSec
 NUCL="docker run -it --name nucl projectdiscovery/nuclei"
