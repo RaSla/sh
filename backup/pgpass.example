@@ -1,0 +1,17 @@
+## Save as ~/.pgpass & replace '__PASSWORD__'
+
+## PD04
+### pd04-as52 (prod)
+# psql -h 10.134.21.145 -U root -d postgres
+10.134.21.145:5432:*:root:__PASSWORD__
+### pd04-as52 (test)
+# psql -h 10.134.21.132 -U root -d postgres
+10.134.21.132:5432:*:root:__PASSWORD__
+# psql -h 10.134.21.132 -U ssd -d ssd
+10.134.21.132:5432:ssd:ssd:__PASSWORD__
+
+### Sandbox-2.0
+# psql -h 172.27.0.32 -p 5433 -U postgres -d ssd
+172.27.0.32:5433:*:postgres:__PASSWORD__
+# psql -h 172.27.0.32 -p 5433 -U ssd -d ssd
+172.27.0.32:5433:ssd:ssd:__PASSWORD__
