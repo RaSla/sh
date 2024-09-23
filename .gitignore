@@ -8,10 +8,16 @@
 **/.env
 **/*.env
 
-## Backup- and local- version
+## Backup- and local- files
 **/.DS_Store
 *~
 *.bak
 *.local
+*.local.yaml
+*.local.yml
 *.log
+*.swp
 *.tmp
+# SQL
+*.sql.*
+*.sql
