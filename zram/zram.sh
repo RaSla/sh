@@ -12,7 +12,15 @@ ZSIZE_CACHE=512
 ZSIZE_SWAP=512
 #
 ZPATH=/tmp/zram
-#
+## Params - https://docs.kernel.org/admin-guide/blockdev/zram.html
+ZDEV_ALGO="zstd"
+#  modprobe zram num_devices=1
+#  cat /sys/block/zram0/comp_algorithm
+#  [lzo-rle] lzo lz4 lz4hc zstd deflate 842
+# echo "$ZDEV_ALGO" > /sys/block/zram0/algorithm
+ZDEV_PARAMS="level=8"
+#ZDEV_PARAMS="algo=zstd level=9 dict=/etc/dictionary"
+# echo "$ZDEV_PARAMS" > /sys/block/zram0/algorithm_params
 ZDEV_CACHE=zram0
 ZDEV_SWAP=zram1
 
@@ -39,10 +47,12 @@ function help_date {
 }
 
 function help_start {
-  echo "* (+) start [<ZSIZE_CACHE> <ZSIZE_SWAP> <USER_NAME>]  ==  Start ZRAM config"
+  echo "* (+) start [<ZSIZE_CACHE> <ZSIZE_SWAP> <USER_NAME> <ALGORITHM> <PARAMS>]  ==  Start ZRAM config"
   echo "   |- <ZSIZE_CACHE> - (Mb) size for Cache-dir. Default is '$ZSIZE_CACHE'"
   echo "   |- <ZSIZE_SWAP>  - (Mb) size for SWAP; 0 = SWAP is OFF. Default is '$ZSIZE_SWAP'"
   echo "   |- <USER_NAME>   - User-name for ownership of cache-dir. Default is '$USER_NAME'"
+  echo "   |- <ALGORITHM>   - Compression algorithm. Default is '$ZDEV_ALGO'"
+  echo "   |- <PARAMS>      - Compression parameters. Default is '$ZDEV_PARAMS'"
 }
 
 function help_stop {
@@ -98,16 +108,25 @@ function zram_start {
     z_cache=$1
     z_swap=$2
     z_user=$3
+    z_algo=$4
+    z_params=$5
     # Make ZRAM-devices
-    echo "> Making ZRAM devices..."
+    echo "> Making ZRAM-devices... ($z_algo, '$z_params')"
     if [[ ${z_swap} -gt 0 ]]; then
       modprobe zram num_devices=2
       # make SWAP block-device
-      echo $((z_swap*1024*1024)) > /sys/block/${ZDEV_SWAP}/disksize ;
+      #zstd=$(cat /sys/block/zram0/comp_algorithm | grep zstd | wc -l)
+      #if [ "$zstd" = "1" ]; then
+        zramctl -a $z_algo /dev/${ZDEV_SWAP} --size ${z_swap}MiB
+        echo "$z_params" > /sys/block/${ZDEV_SWAP}/algorithm_params
+      #else
+      #  echo $((z_swap*1024*1024)) > /sys/block/${ZDEV_SWAP}/disksize ;
+      #fi
     else
       modprobe zram num_devices=1 ;
     fi
-    echo $((z_cache*1024*1024)) > /sys/block/${ZDEV_CACHE}/disksize
+    zramctl -a $z_algo /dev/${ZDEV_CACHE} --size ${z_cache}MiB
+    echo "$z_params" > /sys/block/${ZDEV_CACHE}/algorithm_params
     ls -al /dev/zram*
 
     # Make swap (optional)
@@ -178,12 +197,16 @@ case "$gcmd" in
     z_cache=$1
     z_swap=$2
     z_user=$3
+    z_algo=$4
+    z_params=$5
 
     if [ -z "$1" ]; then z_cache=${ZSIZE_CACHE}; fi
     if [ -z "$2" ]; then z_swap=${ZSIZE_SWAP}; fi
     if [ -z "$3" ]; then z_user=${USER_NAME}; fi
+    if [ -z "$4" ]; then z_algo=${ZDEV_ALGO}; fi
+    if [ -z "$5" ]; then z_params=${ZDEV_PARAMS}; fi
     #echo "DEBUG {z_cache}=${z_cache} {z_swap}=${z_swap} {z_user}=${z_user}"
-    zram_start ${z_cache} ${z_swap} ${z_user}
+    zram_start ${z_cache} ${z_swap} ${z_user} ${z_algo} "${z_params}"
     ;;
   stop )
     zram_stop
