@@ -36,8 +36,8 @@ Arguments:
 * `500` - size (Mb) for cache-dir `/tmp/zram`
 * `0` - size (Mb) for SWAP device. If > 0, then SWAP-device will be created
 * `linux` - Username for `chown` (`linux` by default; `<USERNAME>:<GROUP>` are acceptable too)
-* `zstd` - Compression algorithm (`zstd` by default; options: lzo-rle lzo lz4 lz4hc zstd deflate 842")
-* `"algo=zstd level=9"` - Compression parameters (`"level=8"` by default)
+* `zstd` - Compression algorithm (`zstd` by default; options: `lzo-rle lzo lz4 lz4hc zstd deflate 842`)
+* `"algo=zstd level=9"` - Compression parameters (`"level=8"` by default)  
   see more: <https://docs.kernel.org/admin-guide/blockdev/zram.html>
 
 ## Usage
@@ -48,6 +48,8 @@ By User: create sym-links to the ZRAM-folders, like:
 $ cd ~/.cache
 $ rm -rf mozilla
 $ ln -s /tmp/zram/mozilla/
+$ ln -s /tmp/zram/opera/
 $ ln -s /tmp/zram/thorium/
+$ ln -s /tmp/zram/vivaldi/
 $ ln -s /tmp/zram/yandex-browser/
 ```
