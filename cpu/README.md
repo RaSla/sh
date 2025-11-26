@@ -1,6 +1,11 @@
 # Setup CPU
 
-Script for setting up CPU (freq & governor)
+Script for setting up CPU (freq & governor).
+
+Defaults:
+
+* governor = `powersafe`
+* max_cpu_freq = BASE_CPU_FREQ (w/o "Turbo Boost")
 
 ## Install
 
@@ -8,22 +13,21 @@ Script for setting up CPU (freq & governor)
 
 ```shell
 # cd /opt
-# wget https://github.com/RaSla/sh/raw/main/cpu/set-cpufreq.service
-# wget https://github.com/RaSla/sh/raw/main/cpu/set-cpufreq.sh
-# chmod +x set-cpufreq.sh
+# wget https://github.com/RaSla/sh/raw/main/cpu/cpu-setup.service
+# wget https://github.com/RaSla/sh/raw/main/cpu/cpu-setup.sh
+# chmod +x cpu-setup.sh
 ```
 
-* edit `set-cpufreq.sh` - see `Configure` section
+* (Optional) edit `cpu-setup.sh` - see `Configure` section
 * run commands as ROOT:
 
 ```shell
-# nano /opt/set-cpufreq.sh
-# ln -sf /opt/set-cpufreq.service /lib/systemd/system/
+# ln -sf /opt/cpu-setup.service /lib/systemd/system/
 # systemctl daemon-reload
-# systemctl start set-cpufreq
-# systemctl enable set-cpufreq
-# systemctl status set-cpufreq
-# journalctl -u set-cpufreq
+# systemctl start cpu-setup
+# systemctl enable cpu-setup
+# systemctl status cpu-setup
+# journalctl -u cpu-setup
 ```
 
 ## Configure
@@ -34,7 +38,9 @@ Script for setting up CPU (freq & governor)
 # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 performance powersave
 
-# cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+# cat /sys/devices/system/cpu/cpu0/cpufreq/base_frequency
+2400000
+# cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
 4200000
 # head /proc/cpuinfo 
 processor       : 0
@@ -49,9 +55,14 @@ cache size      : 8192 KB
 physical id     : 0
 ```
 
-* Define vars in `set-cpufreq.sh`, for example:
+* Define vars in `cpu-setup.sh`, for example:
 
 ```shell
+## Comment CPU_GOVERNOR, if you don't want to change CPU Governor 
 CPU_GOVERNOR="powersave"
-CPU_MAX_FREQ=2400000
+CPU_MAX_FREQ=$(cat /sys/devices/system/cpu/cpu0/cpufreq/base_frequency)
+## uncomment & edit, if you want to manually set the maximum frequency limit
+#CPU_MAX_FREQ=2600000
 ```
+
+* Run script after edit: `sudo /opt/cpu-setup.sh` or `systemctl start cpu-setup`

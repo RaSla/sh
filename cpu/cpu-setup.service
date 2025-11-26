@@ -1,0 +1,17 @@
+## ln -sf /opt/cpu-setup.service /lib/systemd/system/
+## systemctl daemon-reload
+## (optional): nano /opt/cpu-setup.sh
+## systemctl start cpu-setup
+## systemctl status cpu-setup
+## systemctl enable cpu-setup
+
+[Unit]
+Description=Set CPU Max frequency & governor
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/cpu-setup.sh
+
+[Install]
+WantedBy=multi-user.target
