@@ -20,6 +20,10 @@
 
 ### OS-wide
 
+Поместить файл скрипта в папку `/etc/profile.d`
+
+ЛИБО
+
 в файле `/etc/bashrc` или `/etc/bash.bashrc` добавить строки для загрузки скриптов из папки `/etc/bashrc.d`:
 
 ```shell
@@ -49,5 +53,4 @@ fi
 NICER_BASH_SH=~/git/nicer-bash-prompt_dev.sh
 if [ -f $NICER_BASH_SH ]; then . $NICER_BASH_SH ; fi
 export NICER_K8S=1
-export NICER_VENV=1
 ```

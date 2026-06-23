@@ -18,7 +18,9 @@ esac
 case "${host}" in
     NOTEBOOK-*) mode_color=green;;
     *-WSN-*) mode_color=green;;
-    *)       mode_color=yellow;;
+    WL-*) mode_color=green;;
+    *test*) mode_color=yellow;;
+    *)       mode_color=green;;
 esac
 if [ "$SIMULATE_ROOT" = "yes" ]; then
     sysmode=root
@@ -107,13 +109,11 @@ cyan="$bold\[$(tput setaf 6)\]"
 function bash_prompt() {
     promptpath=$(promptpath)
     branch=""
-    # Python virtualenv: export NICER_VENV=1
-    if [ ! -z "$NICER_VENV" ]; then
-      if test -z "$VIRTUAL_ENV" ; then
-        venv=""
-      else
-        venv="(`basename \"$VIRTUAL_ENV\"`) "
-      fi
+    # Python virtualenv
+    if test -z "$VIRTUAL_ENV" ; then
+      venv=""
+    else
+      venv="(`basename \"$VIRTUAL_ENV\"`) "
     fi
     # git
     git branch >/dev/null 2>&1
